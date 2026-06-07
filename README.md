@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # cvBuilder MVP — Mac 跑通指南
 
 **首次使用**：用 `onboard.py` 搭建个人资料库 → 用 `generate.py` 根据 JD 生成简历。
@@ -299,3 +300,7 @@ python generate.py
 ```
 
 粘贴 JD → **Ctrl+D** → 等待 → 终端出现完整简历文本。
+=======
+# cvBuilder
+Tailor the resume/CV to the job description
+>>>>>>> 889ef2f66fd86a9984e5043e379d40ef2bbd6ec4
