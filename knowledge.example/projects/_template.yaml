@@ -1,0 +1,67 @@
+# 复制此文件为 your-project.yaml，删除本行说明
+
+id: your-project-id
+
+title:
+  de: ""
+  en: ""
+
+role:
+  de: ""
+  en: ""
+
+period: ""                    # German: 01.03.2024 - 31.08.2024 or 03.2024 - 08.2024 or März 2024 - August 2024
+
+type:
+  de: ""                      # Universitätsprojekt | Praktikum | Projekt
+  en: ""                      # University Project | Internship | Project
+
+tech_stack: []
+keywords: []
+
+target_roles:
+  - hci intern
+
+bullets:
+  - id: b1
+    text:
+      de: ""                  # 动词+动作+工具+结果
+      en: ""
+    tags: []
+    metric: null
+
+  - id: b2
+    text:
+      de: ""
+      en: ""
+    tags: []
+    metric: null
+
+  - id: b3
+    text:
+      de: ""
+      en: ""
+    tags: []
+    metric: null
+
+links:
+  github: null
+  demo: null
+  paper: null
+
+story_hooks:
+  problem:
+    de: ""
+    en: ""
+  constraint:
+    de: ""
+    en: ""
+  decision:
+    de: ""
+    en: ""
+  outcome:
+    de: ""
+    en: ""
+  lesson:
+    de: ""
+    en: ""

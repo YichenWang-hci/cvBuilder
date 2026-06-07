@@ -1,0 +1,109 @@
+{
+  "$schema": "cvBuilder resume output — maps to Figma text layers",
+  "$comment": "MONOLINGUAL OUTPUT ONLY. Each generation produces ONE language. Set meta.output_language to de OR en — never both. All section values must be plain strings in that language, not { de, en } objects. Figma layer names: templates/figma-template-map.yaml",
+  "meta": {
+    "generated_for": "",
+    "jd_summary": "",
+    "output_language": "de"
+  },
+  "sections": {
+    "1_name": {
+      "mutable": false,
+      "figma_layer": "1_name",
+      "value": ""
+    },
+    "2_summary": {
+      "mutable": true,
+      "figma_layer": "2_summary",
+      "source_summary_id": "",
+      "value": ""
+    },
+    "3_education": {
+      "mutable": true,
+      "figma_layers": {
+        "uni": "edu_{n}_uni",
+        "symbol": "edu_{n}_symbol",
+        "major": "edu_{n}_major",
+        "period": "edu_{n}_period"
+      },
+      "items": [
+        {
+          "source_education_id": "",
+          "school": "",
+          "degree": "",
+          "period": ""
+        }
+      ]
+    },
+    "4_projects": {
+      "mutable": true,
+      "figma_layers": {
+        "title": "proj_{n}_title",
+        "role": "proj_{n}_role",
+        "period": "proj_{n}_period",
+        "bullet": "proj_{n}_bullet_{m}"
+      },
+      "items": [
+        {
+          "source_project_id": "",
+          "title": "",
+          "role": "",
+          "period": "",
+          "bullets": [
+            {
+              "source_bullet_id": "",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    "5_contact": {
+      "mutable": false,
+      "figma_layers": {
+        "email": "contact_email",
+        "phone": "contact_phone",
+        "address": "contact_address"
+      },
+      "email": "",
+      "phone": "",
+      "address": ""
+    },
+    "6_abilities": {
+      "mutable": true,
+      "figma_layer": "ability_{n}",
+      "items": [
+        {
+          "rank": 1,
+          "source_ability_id": "",
+          "name": ""
+        }
+      ]
+    },
+    "7_software": {
+      "mutable": true,
+      "figma_layer": "software_{n}",
+      "items": [
+        {
+          "rank": 1,
+          "source_software_id": "",
+          "name": ""
+        }
+      ]
+    },
+    "8_languages": {
+      "mutable": false,
+      "figma_layers": {
+        "english": "lang_1",
+        "german": "lang_2",
+        "chinese": "lang_3"
+      },
+      "items": [
+        {
+          "name": "",
+          "level": ""
+        }
+      ]
+    }
+  }
+}

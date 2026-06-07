@@ -1,0 +1,16 @@
+{
+  "$schema": "Generation request — one language per run",
+  "output_language": "de",
+  "jd_path": "applications/example/jd.txt",
+  "output_dir": "applications/example-de",
+  "_rules": {
+    "monolingual": true,
+    "allowed_output_language": ["de", "en"],
+    "forbidden": [
+      "bilingual resume.json in one run",
+      "mixing de and en strings in the same resume.json",
+      "embedding { de, en } objects in output fields"
+    ],
+    "two_languages_needed": "Run generate twice with output_language de and en into separate output_dir"
+  }
+}

@@ -1,0 +1,57 @@
+# Figma text layer names ↔ resume.json mapping (cvBuilder)
+# Layer names must match Text nodes in your Figma template exactly.
+
+figma:
+  # Optional: only search/fill inside this top-level frame name.
+  # Leave empty to search the entire current page.
+  template_frame: ""
+
+  # Section title layers — design-only, never overwritten from resume.json
+  skip_layers:
+    - "3_education"
+    - "4_projects"
+    - "5_contact"
+    - "6_abilities"
+    - "7_software"
+    - "8_languages"
+
+  # Fixed decorative text (not from resume.json)
+  static_values:
+    edu_1_symbol: "@"
+    edu_2_symbol: "@"
+    edu_3_symbol: "@"
+
+# Language rows in Figma (visual order) → match resume.json items by language name
+languages:
+  lang_1:
+    match: [english, englisch]
+  lang_2:
+    match: [german, deutsch]
+  lang_3:
+    match: [chinese, chinesisch]
+  format: "{name} {level}"
+
+education:
+  slots: 3
+  # Figma suffix → resume.json field on items[n]
+  fields:
+    uni: school
+    major: degree
+    period: period
+
+projects:
+  max: 3
+  bullets_max: 3
+
+abilities:
+  max: 6
+
+software:
+  max: 7
+
+# Optional frame names for hiding empty project blocks (if present in template)
+hide_frames:
+  project_blocks:
+    - proj_1_block
+    - proj_2_block
+    - proj_3_block

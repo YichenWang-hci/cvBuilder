@@ -1,0 +1,23 @@
+# Run: python onboard.py  to fill this file from guided intake.
+
+name: ""
+
+contact:
+  email: ""
+  phone: ""
+  address: ""
+
+languages: []
+
+summaries: []
+
+education: []
+
+application_context:
+  goal: full-time-intern
+  earliest_start: ""
+  duration: ""
+  days_per_week: 5
+  note:
+    de: ""
+    en: ""
