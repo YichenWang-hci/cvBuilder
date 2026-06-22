@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Abilities — cvBuilder{% endblock %}
+{% block content %}
+<form method="post" class="card">
+  <h2 style="margin-top:0">§6 Abilities</h2>
+  <p class="hint">evidence: linked project_id values, comma-separated</p>
+  <div id="abilities">
+    {% for a in abilities or [{}] %}
+    <div class="block ability-row">
+      <label>id</label>
+      <input name="ability_id" value="{{ a.id or '' }}" />
+      <div class="row2">
+        <div><label>name (de)</label><input name="ability_name_de" value="{{ a.name.de if a.name else '' }}" /></div>
+        <div><label>name (en)</label><input name="ability_name_en" value="{{ a.name.en if a.name else '' }}" /></div>
+      </div>
+      <label>keywords</label>
+      <input name="ability_keywords" value="{{ (a.keywords or [])|join(', ') }}" />
+      <label>evidence (project_id)</label>
+      <input name="ability_evidence" value="{% for e in a.evidence or [] %}{{ e.project_id }}{% if not loop.last %}, {% endif %}{% endfor %}" list="project-ids" />
+    </div>
+    {% endfor %}
+  </div>
+  <datalist id="project-ids">
+    {% for p in projects %}<option value="{{ p.id }}">{% endfor %}
+  </datalist>
+  <button type="button" class="btn secondary small" onclick="cloneBlock('abilities','ability-row')">+ Add ability</button>
+  <p style="margin-top:20px"><button type="submit" class="btn">Save abilities.yaml</button></p>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+function cloneBlock(containerId, rowClass) {
+  const c = document.getElementById(containerId);
+  const row = c.querySelector('.' + rowClass);
+  if (row) c.appendChild(row.cloneNode(true));
+}
+</script>
+{% endblock %}

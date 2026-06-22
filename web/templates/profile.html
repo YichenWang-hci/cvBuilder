@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Profile — cvBuilder{% endblock %}
+{% block content %}
+<form method="post" class="card">
+  <h2 style="margin-top:0">§1 Name &amp; §5 Contact</h2>
+  <label>Name</label>
+  {% set contact = profile.contact or {} %}
+  <input type="text" name="name" value="{{ profile.name or '' }}" />
+
+  <div class="row3">
+    <div>
+      <label>Email</label>
+      <input type="email" name="email" value="{{ contact.email or '' }}" />
+    </div>
+    <div>
+      <label>Phone (DIN 5008)</label>
+      <input type="text" name="phone" value="{{ contact.phone or '' }}" placeholder="+49 152 06820364" />
+    </div>
+    <div>
+      <label>Address</label>
+      <input type="text" name="address" value="{{ contact.address or '' }}" />
+    </div>
+  </div>
+
+  <h2 class="section-title">§8 Languages</h2>
+  <p class="hint">Each language needs name and level in both de and en.</p>
+  <div id="languages">
+    {% for lang in profile.languages or [{}] %}
+    <div class="block lang-row">
+      <div class="row2">
+        <div><label>name (de)</label><input name="lang_name_de" value="{{ lang.name.de if lang.name else '' }}" /></div>
+        <div><label>name (en)</label><input name="lang_name_en" value="{{ lang.name.en if lang.name else '' }}" /></div>
+      </div>
+      <div class="row2">
+        <div><label>level (de)</label><input name="lang_level_de" value="{{ lang.level.de if lang.level else '' }}" /></div>
+        <div><label>level (en)</label><input name="lang_level_en" value="{{ lang.level.en if lang.level else '' }}" /></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <button type="button" class="btn secondary small" onclick="cloneBlock('languages','lang-row')">+ Add language</button>
+
+  <h2 class="section-title">§3 Education</h2>
+  <p class="hint">German dates: 01.04.2025 - heute or 04.2025 - 07.2025</p>
+  <div id="education">
+    {% for edu in profile.education or [{}] %}
+    <div class="block edu-row">
+      <div class="row2">
+        <div><label>id</label><input name="edu_id" value="{{ edu.id or '' }}" /></div>
+        <div><label>School</label><input name="edu_school" value="{{ edu.school or '' }}" /></div>
+      </div>
+      <div class="row2">
+        <div><label>degree (de)</label><input name="edu_degree_de" value="{{ edu.degree.de if edu.degree else '' }}" /></div>
+        <div><label>degree (en)</label><input name="edu_degree_en" value="{{ edu.degree.en if edu.degree else '' }}" /></div>
+      </div>
+      <label>period</label>
+      <input name="edu_period" value="{{ edu.period or '' }}" />
+      <label>relevance (comma-separated)</label>
+      <input name="edu_relevance" value="{{ (edu.relevance or [])|join(', ') }}" />
+    </div>
+    {% endfor %}
+  </div>
+  <button type="button" class="btn secondary small" onclick="cloneBlock('education','edu-row')">+ Add education</button>
+
+  <h2 class="section-title">§2 Summary</h2>
+  <div id="summaries">
+    {% for s in profile.summaries or [{}] %}
+    <div class="block summary-row">
+      <div class="row2">
+        <div><label>id</label><input name="summary_id" value="{{ s.id or '' }}" /></div>
+        <div><label>context (comma-separated)</label><input name="summary_context" value="{{ (s.context or [])|join(', ') }}" /></div>
+      </div>
+      <label>text (de)</label>
+      <textarea name="summary_text_de">{{ s.text.de if s.text else '' }}</textarea>
+      <label>text (en)</label>
+      <textarea name="summary_text_en">{{ s.text.en if s.text else '' }}</textarea>
+    </div>
+    {% endfor %}
+  </div>
+  <button type="button" class="btn secondary small" onclick="cloneBlock('summaries','summary-row')">+ Add summary</button>
+
+  <h2 class="section-title">Application context</h2>
+  {% set ctx = profile.application_context or {} %}
+  <div class="row3">
+    <div><label>goal</label><input name="goal" value="{{ ctx.goal or 'full-time-intern' }}" /></div>
+    <div><label>earliest_start (MM.JJJJ)</label><input name="earliest_start" value="{{ ctx.earliest_start or '' }}" /></div>
+    <div><label>duration</label><input name="duration" value="{{ ctx.duration or '' }}" /></div>
+  </div>
+  <label>days_per_week</label>
+  <input type="number" name="days_per_week" value="{{ ctx.days_per_week or 5 }}" />
+  <label>note (de)</label>
+  <textarea name="note_de">{{ ctx.note.de if ctx.note else '' }}</textarea>
+  <label>note (en)</label>
+  <textarea name="note_en">{{ ctx.note.en if ctx.note else '' }}</textarea>
+
+  <p style="margin-top:20px">
+    <button type="submit" class="btn">Save profile.yaml</button>
+  </p>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+function cloneBlock(containerId, rowClass) {
+  const c = document.getElementById(containerId);
+  const row = c.querySelector('.' + rowClass);
+  if (row) c.appendChild(row.cloneNode(true));
+}
+</script>
+{% endblock %}

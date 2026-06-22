@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ 'New' if is_new else 'Edit' }} work/internship — cvBuilder{% endblock %}
+{% block content %}
+<form method="post" class="card">
+  <h2 style="margin-top:0">{{ 'New work / internship' if is_new else 'Edit work / internship' }}</h2>
+  {% if from_narrative and intake_report %}
+  <div class="flash ok" style="white-space:pre-wrap">{{ intake_report }}</div>
+  <p class="hint">Review the draft below, edit if needed, then save.</p>
+  {% endif %}
+
+  <label>id (filename slug, no spaces)</label>
+  <input type="text" name="id" value="{{ experience.id if experience else '' }}" {{ '' if is_new else 'readonly' }} required />
+
+  <label>Type</label>
+  <select name="kind">
+    <option value="internship" {{ 'selected' if (experience and experience.kind == 'internship') or not experience else '' }}>internship — internship / Praktikum / working student</option>
+    <option value="work" {{ 'selected' if experience and experience.kind == 'work' else '' }}>work — full-time or part-time job</option>
+  </select>
+
+  <label>company (official name, required)</label>
+  <input type="text" name="company" value="{{ experience.company if experience else '' }}" placeholder="Siemens AG" required />
+
+  <div class="row2">
+    <div><label>title subtitle (de, optional)</label><input name="title_de" value="{{ experience.title.de if experience and experience.title else '' }}" placeholder="XR Team" /></div>
+    <div><label>title subtitle (en, optional)</label><input name="title_en" value="{{ experience.title.en if experience and experience.title else '' }}" placeholder="XR Team" /></div>
+  </div>
+  <div class="row2">
+    <div><label>role (de)</label><input name="role_de" value="{{ experience.role.de if experience and experience.role else '' }}" /></div>
+    <div><label>role (en)</label><input name="role_en" value="{{ experience.role.en if experience and experience.role else '' }}" /></div>
+  </div>
+  <div class="row2">
+    <div><label>type (de)</label><input name="type_de" value="{{ experience.type.de if experience and experience.type else '' }}" placeholder="Praktikum" /></div>
+    <div><label>type (en)</label><input name="type_en" value="{{ experience.type.en if experience and experience.type else '' }}" placeholder="Internship" /></div>
+  </div>
+
+  <div class="row2">
+    <div>
+      <label>period (German date format)</label>
+      <input name="period" value="{{ experience.period if experience else '' }}" placeholder="01.03.2024 - 31.08.2024" />
+    </div>
+    <div>
+      <label>location (optional)</label>
+      <input name="location" value="{{ experience.location if experience else '' }}" placeholder="München / remote" />
+    </div>
+  </div>
+
+  <label>tech_stack (comma-separated)</label>
+  <input name="tech_stack" value="{{ (experience.tech_stack or [])|join(', ') if experience else '' }}" />
+
+  <label>keywords (comma-separated)</label>
+  <input name="keywords" value="{{ (experience.keywords or [])|join(', ') if experience else '' }}" />
+
+  <label>target_roles (comma-separated)</label>
+  <input name="target_roles" value="{{ (experience.target_roles or [])|join(', ') if experience else '' }}" />
+
+  <h2 class="section-title">Bullets (up to 3 on resume)</h2>
+  <div id="bullets">
+    {% for b in (experience.bullets if experience else []) or [{'id':'b1'},{'id':'b2'},{'id':'b3'}] %}
+    <div class="block bullet-row">
+      <label>bullet id</label>
+      <input name="bullet_id" value="{{ b.id or '' }}" />
+      <label>text (de)</label>
+      <textarea name="bullet_text_de">{{ b.text.de if b.text else '' }}</textarea>
+      <label>text (en)</label>
+      <textarea name="bullet_text_en">{{ b.text.en if b.text else '' }}</textarea>
+      <label>tags (comma-separated)</label>
+      <input name="bullet_tags" value="{{ (b.tags or [])|join(', ') }}" />
+    </div>
+    {% endfor %}
+  </div>
+  <button type="button" class="btn secondary small" onclick="cloneBlock('bullets','bullet-row')">+ Add bullet</button>
+
+  {% if is_new and not from_narrative %}
+  <p class="hint"><a href="{{ url_for('experience_narrative') }}">Describe in your own words instead</a></p>
+  {% endif %}
+
+  <p style="margin-top:20px">
+    <button type="submit" class="btn">Save</button>
+    <a class="btn secondary" href="{{ url_for('experiences') }}" style="margin-left:8px">Back</a>
+  </p>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+function cloneBlock(containerId, rowClass) {
+  const c = document.getElementById(containerId);
+  const row = c.querySelector('.' + rowClass);
+  if (row) c.appendChild(row.cloneNode(true));
+}
+</script>
+{% endblock %}

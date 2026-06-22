@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block body_class %}page-home{% endblock %}
+{% block title %}Home — cvBuilder{% endblock %}
+
+{% block landing_hero %}
+<section
+  class="landing-hero"
+  aria-label="Welcome"
+  style="--hero-aspect: {{ hero_width }} / {{ hero_height }}; --hero-max-width: {{ hero_max_width }}px;"
+  id="landing-hero"
+>
+  <div class="landing-hero__frame">
+    {% if hero_image %}
+    <img
+      class="landing-hero__image"
+      src="{{ url_for('static', filename=hero_src) }}"
+      {% if hero_2x %}
+      srcset="{{ url_for('static', filename=hero_src) }} {{ hero_width }}w, {{ url_for('static', filename=hero_src_2x) }} {{ hero_width_2x }}w"
+      {% else %}
+      srcset="{{ url_for('static', filename=hero_src) }} {{ hero_width }}w"
+      {% endif %}
+      sizes="100vw"
+      alt="CVBuilder — Craft your story. Land your dream job."
+      decoding="async"
+      fetchpriority="high"
+    />
+    {% endif %}
+  </div>
+
+  <div class="landing-hero__actions">
+    <a class="btn-hero btn-hero-primary" href="#app-content">Get Started</a>
+    {% if templates_video_url %}
+    <a
+      class="btn-hero btn-hero-outline"
+      href="{{ templates_video_url }}"
+      target="_blank"
+      rel="noopener noreferrer"
+    >View Templates</a>
+    {% else %}
+    <button type="button" class="btn-hero btn-hero-outline" id="view-templates-btn">View Templates</button>
+    {% endif %}
+  </div>
+
+  <a class="landing-hero__scroll-icon" href="#app-content" aria-label="Scroll down">
+    <svg class="landing-hero__chevron" width="22" height="22" viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M5 7.5L10 12.5L15 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+</section>
+
+<div class="templates-modal" id="templates-modal" hidden>
+  <div class="templates-modal__backdrop" data-close-templates></div>
+  <div class="templates-modal__panel" role="dialog" aria-labelledby="templates-modal-title" aria-modal="true">
+    <button type="button" class="templates-modal__close" data-close-templates aria-label="Close">&times;</button>
+    <h2 id="templates-modal-title">View Templates</h2>
+    <p class="hint">A walkthrough video will be linked here soon.</p>
+    <p class="hint">To enable the button now, set a URL in <code>web/site.yaml</code>:</p>
+    <pre class="templates-modal__code">templates_video_url: "https://www.youtube.com/watch?v=YOUR_VIDEO_ID"</pre>
+    <p class="hint">Or set <code>TEMPLATES_VIDEO_URL</code> in <code>.env</code>.</p>
+    <a class="btn" href="#app-content" data-close-templates>Get Started</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card card-hero">
+  <p class="hint">Local knowledge base · Data stays in <code>knowledge/</code> · Nothing is uploaded</p>
+  <div class="grid stats">
+    <div class="stat"><strong>{{ profile.get('name') or '—' }}</strong><span>Name</span></div>
+    <div class="stat"><strong>{{ experience_count }}</strong><span>Work &amp; internships</span></div>
+    <div class="stat"><strong>{{ project_count }}</strong><span>Projects</span></div>
+    <div class="stat"><strong>{{ ability_count }}</strong><span>Abilities</span></div>
+    <div class="stat"><strong>{{ software_count }}</strong><span>Software</span></div>
+    <div class="stat"><strong>{{ layer_filled }}/{{ layer_fillable }}</strong><span>Figma layers</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="card-title">How it works</h2>
+  <ol class="flow-list">
+    <li>Fill in <strong>Profile</strong>. Add company roles under <strong>Work &amp; Internships</strong>, or student projects under <strong>Projects</strong> (section 4 shows up to 3 entries; work/internships first).</li>
+    <li>Add <strong>Abilities</strong> and <strong>Software</strong>.</li>
+    <li>Open <a href="{{ url_for('figma_layers') }}">Figma Layers</a> and name text layers in your template.</li>
+    <li><a href="{{ url_for('generate_resume') }}">Generate Resume</a>: paste a job description → get <code>resume.json</code> + Figma JSON.</li>
+    <li>Copy the Figma JSON into the plugin (or run <code>generate.py</code> in the terminal).</li>
+  </ol>
+</div>
+
+<div class="card actions-row">
+  <a class="btn" href="{{ url_for('profile') }}">Edit profile</a>
+  <a class="btn secondary" href="{{ url_for('experiences') }}">Manage work &amp; internships</a>
+  <a class="btn secondary" href="{{ url_for('projects') }}">Manage projects</a>
+  <a class="btn secondary" href="{{ url_for('figma_layers') }}">View Figma layer names</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const modal = document.getElementById("templates-modal");
+  const openBtn = document.getElementById("view-templates-btn");
+  if (openBtn && modal) {
+    openBtn.addEventListener("click", () => {
+      modal.hidden = false;
+      document.body.classList.add("modal-open");
+    });
+    modal.querySelectorAll("[data-close-templates]").forEach((el) => {
+      el.addEventListener("click", () => {
+        modal.hidden = true;
+        document.body.classList.remove("modal-open");
+      });
+    });
+  }
+})();
+</script>
+{% endblock %}

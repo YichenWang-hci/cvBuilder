@@ -1,0 +1,73 @@
+# 工作 / 实习经历 — 复制为 your-company-role.yaml
+
+id: your-experience-id
+
+kind: internship                 # internship | work
+
+company: ""                      # 公司官方名称（语言无关）
+
+title:                           # 可选：部门/项目线 subtitle
+  de: ""
+  en: ""
+
+role:                            # 职位
+  de: ""
+  en: ""
+
+period: ""                       # German: 01.03.2024 - 31.08.2024
+
+type:
+  de: ""                         # Praktikum | Werkstudent | Vollzeit ...
+  en: ""                         # Internship | Working Student | Full-time ...
+
+location: ""                     # 可选：城市 / remote
+
+tech_stack: []
+keywords: []
+
+target_roles:
+  - hci intern
+
+bullets:
+  - id: b1
+    text:
+      de: ""
+      en: ""
+    tags: []
+    metric: null
+
+  - id: b2
+    text:
+      de: ""
+      en: ""
+    tags: []
+    metric: null
+
+  - id: b3
+    text:
+      de: ""
+      en: ""
+    tags: []
+    metric: null
+
+links:
+  github: null
+  demo: null
+  paper: null
+
+story_hooks:
+  problem:
+    de: ""
+    en: ""
+  constraint:
+    de: ""
+    en: ""
+  decision:
+    de: ""
+    en: ""
+  outcome:
+    de: ""
+    en: ""
+  lesson:
+    de: ""
+    en: ""

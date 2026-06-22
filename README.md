@@ -1,301 +1,397 @@
-# cvBuilder MVP — Mac 跑通指南
+# cvBuilder
 
-**首次使用**：用 `onboard.py` 搭建个人资料库 → 用 `generate.py` 根据 JD 生成简历。
+**EN:** Local-first resume builder — maintain a personal knowledge base on your machine, paste a job description (JD), and generate a tailored resume + cover letter. Optional Figma fill if you bring your own template.
 
-输入一段 JD → 终端打印完整简历文本，并保存到 `applications/` 文件夹。
+**中文：** 本地优先的简历生成工具 — 在本机维护个人资料库，粘贴招聘启事（JD），生成定制简历与动机信。可自备 Figma 模板做可选的一键填充。
 
----
+- **EN:** Data stays in `knowledge/` (gitignored). Terminal CLI or local web UI at `http://127.0.0.1:5050`. Resume output in **German** or **English** (one language per run). **Projects** for students; **Work & Internships** for job experience — both feed resume §4.
+- **中文：** 数据保存在本机 `knowledge/`（不会提交到 git）。支持终端 CLI 或本地网页 `http://127.0.0.1:5050`。每次生成一种语言（**德语**或**英语**）。学生填 **Projects（项目）**；有实习/工作经历填 **Work & Internships（工作/实习）** — 共同组成简历第 4 段。
 
-## 第零步：搭建个人资料库（首次 / 新用户）
-
-```bash
-cd /Users/a1/Documents/cvBuilder
-source .venv/bin/activate
-python onboard.py --init          # 从 knowledge.example/ 复制空模板
-python onboard.py                 # 按提示输入固定信息（任意语言）
-```
-
-`onboard.py` 会生成 `knowledge/profile.yaml`（姓名、联系方式、教育、语言等，自动存 de + en）。
-
-**一次性粘贴模式**（不用逐题回答）：
-
-```bash
-python onboard.py --paste
-# 粘贴全部个人信息 → Ctrl+D
-```
-
-已有 `profile.yaml` 只想更新固定信息、保留自我描述：
-
-```bash
-python onboard.py --keep-summaries
-```
+> **Figma template not included · 不提供 Figma 简历模板**  
+> **EN:** This repo does **not** ship a ready-made Figma resume file. You can still use `resume.json`, `resume.txt`, and `cover_letter.md`. Figma is optional: create your own template, name layers as documented, import the included plugin, paste `figma-fill-payload.json`.  
+> **中文：** 本仓库**不包含**现成的 Figma 简历设计文件。你仍可完整使用生成能力。Figma 为可选：自备模板、按文档命名文字图层、导入自带插件、粘贴 `figma-fill-payload.json` 即可填充。
 
 ---
 
-## 第一步：打开终端
+## Table of contents · 目录
 
-`应用程序` → `实用工具` → **终端**  
-或在 Cursor 里打开集成终端。
+- [Requirements · 环境要求](#requirements--环境要求)
+- [Quick start · 快速开始（首次）](#quick-start--快速开始首次)
+- [Every new terminal session · 每次新开终端](#every-new-terminal-session--每次新开终端)
+- [Configure LLM · 配置 LLM](#configure-llm--配置-llm)
+- [Step 1 — Knowledge base · 步骤 1 — 资料库](#step-1--knowledge-base--步骤-1--资料库)
+- [Step 2 — Profile & experience · 步骤 2 — 填写经历](#step-2--profile--experience--步骤-2--填写经历)
+- [Step 3 — Generate resume · 步骤 3 — 生成简历](#step-3--generate-resume--步骤-3--生成简历)
+- [Local web UI · 本地网页](#local-web-ui--本地网页)
+- [Knowledge layout · 资料库结构](#knowledge-layout--资料库结构)
+- [Output files · 输出文件](#output-files--输出文件)
+- [Optional Figma · 可选 Figma 流程](#optional-figma--可选-figma-流程)
+- [CLI reference · 命令行参数](#cli-reference--命令行参数)
+- [Troubleshooting · 常见问题](#troubleshooting--常见问题)
+- [Privacy · 隐私与数据](#privacy--隐私与数据)
+- [Project structure · 项目结构](#project-structure--项目结构)
+- [Typical workflow · 典型流程](#typical-workflow--典型流程)
 
 ---
 
-## 第二步：进入项目并激活环境
+## Requirements · 环境要求
 
-每次新开终端都要执行（复制粘贴，一行一行来）：
+| Item | EN | 中文 |
+|------|----|------|
+| **Python** | 3.10+ (3.11 tested) | 3.10 及以上 |
+| **OS** | macOS, Linux, Windows | macOS / Linux / Windows |
+| **Git** | To clone the repo | 用于克隆仓库 |
+| **LLM API** | Gemini (free), Ollama, or OpenAI | 见下方配置章节 |
+| **Figma** | Optional — BYO template only | 可选 — 需自备模板 |
+
+---
+
+## Quick start · 快速开始（首次）
+
+**EN:** Run inside the folder you cloned — **do not** use a personal absolute path like `/Users/...`.
+
+**中文：** 在**你 clone 下来的项目文件夹内**执行 — **不要**写个人绝对路径（如 `/Users/...`）。
 
 ```bash
-cd /Users/a1/Documents/cvBuilder
-source .venv/bin/activate
-```
+# 1. Clone / 克隆
+git clone https://github.com/YichenWang-hci/cvBuilder.git
+cd cvBuilder
 
-成功时，命令行前面会出现 `(.venv)`。
-
-如果还没有 `.venv`，先执行一次：
-
-```bash
-cd /Users/a1/Documents/cvBuilder
+# 2. Virtual environment / 虚拟环境
 python3 -m venv .venv
+
+# 3. Activate / 激活
+# macOS / Linux:
 source .venv/bin/activate
+# Windows (CMD):
+# .venv\Scripts\activate.bat
+# Windows (PowerShell):
+# .venv\Scripts\Activate.ps1
+
+# 4. Dependencies / 依赖
 pip install -r requirements.txt
+
+# 5. API keys / 配置密钥
+cp .env.example .env
+# Edit .env / 编辑 .env
+
+# 6. Empty knowledge template / 初始化空资料库
+python onboard.py --init
+
+# 7. Profile intake / 录入固定信息（可用任意语言）
+python onboard.py
+
+# 8. Verify (no LLM call) / 检查资料库（不调用 LLM）
+python generate.py --dry-run
 ```
+
+**EN:** Success → prompt shows `(.venv)` at the start.  
+**中文：** 成功时命令行前会出现 `(.venv)`。
 
 ---
 
-## 第三步：配置 API（推荐免费 Gemini）
+## Every new terminal session · 每次新开终端
+
+```bash
+cd cvBuilder                    # your clone path / 你的 clone 目录
+source .venv/bin/activate       # Windows: see above / Windows 见上
+```
+
+**EN:** Then run `python manage.py`, `python generate.py`, etc.  
+**中文：** 之后可运行 `python manage.py`、`python generate.py` 等。
+
+---
+
+## Configure LLM · 配置 LLM
 
 ```bash
 cp .env.example .env
-open -e .env
 ```
 
-### 方案 A：Google Gemini（免费，推荐）
+### Option A — Gemini（推荐 / recommended, free tier）
 
-1. 打开 https://aistudio.google.com/apikey  
-2. 登录 Google 账号 → Create API key  
-3. 在 `.env` 里设置：
+1. Key: https://aistudio.google.com/apikey  
+2. `.env`:
 
-```
+```env
 LLM_PROVIDER=gemini
-GEMINI_API_KEY=你的Gemini密钥
-GEMINI_MODEL=gemini-2.0-flash
+GEMINI_API_KEY=your-key-here
+GEMINI_MODEL=gemini-2.5-flash-lite
 ```
 
-**不需要信用卡。** 有每日免费额度，生成简历够用。
+**EN:** No credit card for free tier (Google limits apply).  
+**中文：** 免费额度无需信用卡（受 Google 配额限制）。
 
-### 方案 B：Ollama（本地 100% 免费）
-
-1. 安装 https://ollama.com  
-2. 终端运行：
+### Option B — Ollama（本地免费 / local free）
 
 ```bash
 ollama pull llama3.2
 ```
 
-3. `.env` 里设置：
-
-```
+```env
 LLM_PROVIDER=ollama
 OLLAMA_MODEL=llama3.2
+OLLAMA_HOST=http://localhost:11434
 ```
 
-需要 Mac 有足够内存（建议 16GB+）。速度取决于电脑。
+### Option C — OpenAI（付费 API / paid）
 
-### 方案 C：OpenAI API（付费，Plus 会员不包含）
+**EN:** ChatGPT Plus does **not** include API billing.  
+**中文：** ChatGPT Plus **不包含** API 费用。
 
-```
+```env
 LLM_PROVIDER=openai
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 ```
 
-需单独在 platform.openai.com 绑卡充值。
+---
+
+## Step 1 — Knowledge base · 步骤 1 — 资料库
+
+**EN:** Creates local `knowledge/` from committed `knowledge.example/` (empty placeholders).  
+**中文：** 从仓库内的 `knowledge.example/` 复制到本机 `knowledge/`（空模板，不含个人数据）。
+
+```bash
+python onboard.py --init
+```
+
+| Flag | EN | 中文 |
+|------|----|------|
+| `--init` | Copy template → `knowledge/` | 复制模板到 `knowledge/` |
+| `--force` | Overwrite existing `knowledge/` | 覆盖已有 `knowledge/` |
 
 ---
 
-## 第四步：检查环境（不花钱）
+## Step 2 — Profile & experience · 步骤 2 — 填写经历
+
+### Profile（CLI）
 
 ```bash
-python generate.py --dry-run
+python onboard.py              # Interactive / 逐步问答
+python onboard.py --paste        # Paste block / 一次性粘贴
+python onboard.py --keep-summaries   # Keep summaries / 保留已有自我描述
 ```
 
-应看到：
+**End paste input / 结束粘贴：** macOS/Linux **Ctrl+D** · Windows **Ctrl+Z** then Enter
 
-```
-Knowledge base loaded OK
-  Projects: 4
-    - ml-gesture
-    ...
-Dry run complete.
-```
+### Projects & work（web UI recommended / 推荐网页）
+
+| User | EN | 中文 |
+|------|----|------|
+| Student | **Projects** — coursework, research | **Projects（项目）** — 课程、个人、研究 |
+| Employed / intern | **Work & Internships** | **Work & Internships（工作/实习）** |
+| Both | §4 max 3 items; work first | 第 4 段最多 3 条，优先工作/实习 |
+
+**EN:** Web **narrative intake** — describe in any language → LLM drafts de/en YAML → you review.  
+**中文：** 网页 **口述录入** — 任意语言描述 → LLM 生成 de/en 双语 YAML → 确认后保存。
+
+也可直接编辑 `knowledge/` 下 YAML 文件。
 
 ---
 
-## 第五步：输入 JD，生成简历
-
-### 方式 A：交互粘贴（推荐）
+## Step 3 — Generate resume · 步骤 3 — 生成简历
 
 ```bash
-python generate.py
+python generate.py                          # Paste JD / 粘贴 JD
+python generate.py --jd-file path/to/jd.txt
+python generate.py --jd-file jd.txt --lang de   # Force German / 强制德语
+python generate.py --jd-file jd.txt --lang en   # Force English / 强制英语
+python generate.py --jd-file jd.txt --quiet      # Files only / 只写文件
 ```
 
-1. 终端提示 `Paste the job description below.`
-2. **粘贴**整段 JD（Command+V）
-3. 按 **Control + D** 结束输入（Mac 上是 Ctrl，不是 Cmd）
-4. 等待 20–40 秒
-
-### 方式 B：JD 放在文件里
-
-```bash
-python generate.py --jd-file ~/Desktop/jd.txt
-```
-
-### 方式 C：强制德语 / 英语
-
-```bash
-python generate.py --jd-file ~/Desktop/jd.txt --lang de
-python generate.py --jd-file ~/Desktop/jd.txt --lang en
-```
+**EN:** After pasting JD in terminal, press **Ctrl+D** (macOS/Linux). Wait ~20–60 s.  
+**中文：** 终端粘贴 JD 后按 **Ctrl+D**，等待约 20–60 秒。
 
 ---
 
-## 第六步：看输出
+## Local web UI · 本地网页
 
-### 终端里会直接打印：
-
-```
-============================================================
-CVBUILDER — GENERATED RESUME
-============================================================
-Language: de
-
-[1] NAME
-Yichen Wang
-
-[2] SUMMARY
-...
-
-[3] EDUCATION
-...
-
-[4] PROJECTS
-...
-
-[5] CONTACT
-...
-
-[6] ABILITIES
-...
-
-[7] SOFTWARE
-...
-
-[8] LANGUAGES
-...
-
-============================================================
-MATCH REPORT
-============================================================
-...
-
-============================================================
-COVER LETTER
-============================================================
-...
+```bash
+cd cvBuilder
+source .venv/bin/activate
+python manage.py
 ```
 
-### 同时保存到文件夹：
+Open · 打开 **http://127.0.0.1:5050**
+
+| Page | EN | 中文 |
+|------|----|------|
+| Profile | Name, contact, education, languages | 固定信息 |
+| Work & Internships | `knowledge/experiences/*.yaml` | 工作 / 实习 |
+| Projects | `knowledge/projects/*.yaml` | 项目 |
+| Abilities / Software | Skills for JD matching | 能力 / 软件 |
+| Figma Layers | Required layer names for your template | Figma 图层命名列表 |
+| Generate Resume | Paste JD → `applications/` | 生成简历 |
+
+**EN:** Web and CLI share `knowledge/` and `.env`. Home page: **Get Started** or scroll down to enter the app; **View Templates** opens a video link when configured in `web/site.yaml` (`templates_video_url`) or `.env` (`TEMPLATES_VIDEO_URL`).  
+**中文：** 网页与终端共用 `knowledge/` 与 `.env`。首页 **Get Started** 或向下滑进入使用；**View Templates** 可在 `web/site.yaml` 或 `.env` 配置 YouTube 等链接后打开。
+
+---
+
+## Knowledge layout · 资料库结构
 
 ```
-applications/20260324-153045-application/
+knowledge/                 # gitignored / 不提交
+├── profile.yaml           # §1–§3, §5, §8
+├── abilities.yaml         # §6
+├── software.yaml          # §7
+├── projects/              # §4 projects / 项目
+├── experiences/           # §4 work & internships / 工作实习
+├── WRITING_RULES.md
+└── DATA_FORMAT.md         # DE dates, DIN 5008 phone / 德式日期与电话
+```
+
+Committed template · 仓库模板：`knowledge.example/` · 格式说明：`templates/DATA_FORMAT.md`
+
+---
+
+## Output files · 输出文件
+
+```
+applications/20260601-153045-acme-intern/
 ├── jd.txt
-├── resume.txt       ← 与终端打印内容相同
+├── resume.txt
 ├── resume.json
 ├── cover_letter.md
-└── match_report.md
+├── match_report.md
+└── figma-fill-payload.json    # if --fill-figma / 勾选 Figma JSON
 ```
 
-打开最新结果：
+**Open latest / 打开最新结果（macOS）：**
 
 ```bash
 open applications/$(ls -t applications | head -1)/resume.txt
 ```
 
----
-
-## 常见问题
-
-| 问题 | 解决 |
-|------|------|
-| `OPENAI_API_KEY is not set` | 检查 `.env` 是否填了 key，是否在 `cvBuilder` 目录下运行 |
-| `command not found: python` | 用 `python3 generate.py` |
-| 粘贴 JD 后没反应 | 贴完后按 **Ctrl+D** |
-| `zsh: command not found: #` | 不要把以 `#` 开头的说明文字粘贴进终端 |
-| 没有 `(.venv)` | 先执行 `source .venv/bin/activate` |
-| 想只要文件、不打印终端 | 加 `--quiet` |
+Linux: `xdg-open applications/$(ls -t applications | head -1)/resume.txt`
 
 ---
 
-## Figma 填充（MVP）
+## Optional Figma · 可选 Figma 流程
 
-生成 `resume.json` 后，可导出 Figma 图层填充数据，在 Figma 模版里一键写入。
+**EN:** **No Figma resume file in this repo.** To use fill:
 
-### 1. 一次性：导入 Figma 插件
+**中文：** **仓库不提供 Figma 简历文件。** 使用填充功能需：
 
-1. 打开 Figma 桌面版  
-2. **Plugins → Development → Import plugin from manifest…**  
-3. 选择项目里的 `figma-plugin/manifest.json`
-
-### 2. 生成填充数据
-
-```bash
-# 单独对已有 resume.json
-python fill_figma.py applications/最新目录/resume.json
-
-# 或生成简历时一并导出
-python generate.py --jd-file ~/Desktop/jd.txt --fill-figma
-```
-
-会在同目录生成：
-
-```
-applications/.../
-├── figma-fill-payload.json   ← 图层名 → 文本
-└── figma-fill.js             ← 可选，给 Cursor use_figma 用
-```
-
-### 3. 在 Figma 里填充
-
-1. 打开你的简历模版文件  
-2. **Plugins → Development → cvBuilder Fill**  
-3. 把 `figma-fill-payload.json` 的内容粘贴进文本框  
-4. 点击 **Fill resume**
-
-可选：在 `.env` 设置 `FIGMA_TEMPLATE_FRAME=你的A4 Frame名`，插件里填同一名字，只填充该 Frame 内图层。
-
-### 4. 校验图层名（可选）
+1. **EN:** Design your own resume in Figma · **中文：** 在 Figma 中自备简历模板  
+2. **EN:** Name text layers per **Figma Layers** page or `templates/figma-template-map.yaml` · **中文：** 文字图层名与网页 **Figma Layers** 或映射文件一致  
+3. **EN:** Import plugin: `figma-plugin/manifest.json` · **中文：** 导入开发插件  
+4. Generate with Figma JSON / 生成时导出 JSON:
 
 ```bash
-# .env 里配置 FIGMA_ACCESS_TOKEN + FIGMA_FILE_KEY
-python fill_figma.py applications/.../resume.json --validate
+python generate.py --jd-file jd.txt --fill-figma
+python fill_figma.py applications/your-folder/resume.json
 ```
 
-### 复制到剪贴板（macOS）
+5. **EN:** Plugin **cvBuilder Fill** → paste `figma-fill-payload.json` → **Fill resume**  
+   **中文：** 插件粘贴 JSON → **Fill resume**
 
-```bash
-python fill_figma.py applications/.../resume.json --copy-clipboard
-# 或
-python generate.py --fill-figma --copy-figma-clipboard
+Optional `.env`: `FIGMA_ACCESS_TOKEN`, `FIGMA_FILE_KEY`, `FIGMA_TEMPLATE_FRAME`
+
+---
+
+## CLI reference · 命令行参数
+
+### `onboard.py`
+
+| Flag | EN | 中文 |
+|------|----|------|
+| `--init` | Create `knowledge/` | 初始化资料库 |
+| `--force` | Overwrite on init | 强制覆盖 |
+| `--paste` | Single-block intake | 一次性粘贴 |
+| `--keep-summaries` | Keep summaries | 保留 summaries |
+| `--yes` / `-y` | Save without confirm | 跳过确认 |
+| `--dry-run` | No LLM | 不调用 LLM |
+| `--provider` | gemini \| ollama \| openai | 指定 LLM |
+
+### `generate.py`
+
+| Flag | EN | 中文 |
+|------|----|------|
+| `--jd-file` | JD file path | JD 文件路径 |
+| `--lang de\|en` | Force language | 强制输出语言 |
+| `--dry-run` | Load knowledge only | 仅加载资料库 |
+| `--quiet` | No terminal print | 不打印到终端 |
+| `--fill-figma` | Write Figma JSON | 导出 Figma JSON |
+| `--copy-figma-clipboard` | Copy JSON (macOS) | 复制到剪贴板 |
+| `--output-dir` | Custom folder | 自定义输出目录 |
+
+### `manage.py`
+
+**EN:** Local web server at `127.0.0.1:5050` · **中文：** 启动本地网页服务
+
+---
+
+## Troubleshooting · 常见问题
+
+| Problem / 问题 | Fix / 解决 |
+|----------------|------------|
+| `command not found: python` | Use `python3` / 改用 `python3` |
+| No `(.venv)` / 无虚拟环境前缀 | `source .venv/bin/activate` from project root / 在项目根目录激活 |
+| `knowledge/ not found` | `python onboard.py --init` |
+| Pasted JD, no output / 粘贴 JD 无反应 | **Ctrl+D** after paste / 粘贴后 **Ctrl+D** |
+| API key errors | Check `.env` in project root / 检查根目录 `.env` |
+| `command not found: #` | Don't paste comment lines / 勿粘贴 `#` 注释行 |
+| Wrong language / 语言不对 | `--lang de` or `--lang en` |
+| Figma fill fails / Figma 无填充 | Layer names must match; BYO template / 图层名须完全一致；需自备模板 |
+| Old hero image / 首图未更新 | Replace `web/design/webDesign.png`; restart `manage.py` |
+
+---
+
+## Privacy · 隐私与数据
+
+| Local only / 仅本机 | In git / 提交到 git |
+|---------------------|---------------------|
+| `knowledge/` — personal data / 个人资料 | `knowledge.example/` — empty template / 空模板 |
+| `applications/` — outputs / 生成结果 | Code, prompts, plugin / 代码与插件 |
+| `.env` — API keys / 密钥 | `.env.example` |
+
+**EN:** Web UI listens on `127.0.0.1` only — no cvBuilder cloud upload.  
+**中文：** 网页仅绑定本机，不上传到任何 cvBuilder 服务器。
+
+---
+
+## Project structure · 项目结构
+
+```
+cvBuilder/
+├── onboard.py              # Profile → profile.yaml
+├── generate.py             # JD → resume + cover letter
+├── fill_figma.py           # resume.json → Figma payload
+├── manage.py               # Web UI / 网页
+├── agent/                  # LLM prompts
+├── web/                    # Flask app
+├── knowledge.example/      # Committed template / 提交的空模板
+├── figma-plugin/           # Dev plugin (BYO template) / 插件
+├── figma_fill/
+├── templates/
+└── requirements.txt
 ```
 
 ---
 
-## 完整流程（复制这一组即可）
+## Typical workflow · 典型流程
 
 ```bash
-cd /Users/a1/Documents/cvBuilder
+cd cvBuilder
 source .venv/bin/activate
-python generate.py --dry-run
-python generate.py
+
+python onboard.py --init
+python onboard.py
+
+python manage.py
+# EN: Browser — Projects / Work & Internships / Abilities / Software
+# 中文：浏览器填写 项目 / 工作实习 / 能力 / 软件
+
+python generate.py --jd-file my-job.txt --fill-figma
+# Optional Figma plugin / 可选：插件粘贴 figma-fill-payload.json
 ```
 
-粘贴 JD → **Ctrl+D** → 等待 → 终端出现完整简历文本。
+---
+
+## License & contributing · 开源与贡献
+
+**EN:** Open source — clone, use, adapt. Issues & PRs welcome. Without Figma you still get `resume.txt`, `resume.json`, `cover_letter.md`.
+
+**中文：** 开源项目，欢迎克隆使用与 PR。即使不用 Figma，也可完整使用文本与 JSON 输出。

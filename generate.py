@@ -24,6 +24,7 @@ from agent.llm import call_llm as llm_call, get_provider as llm_get_provider
 
 ROOT = Path(__file__).resolve().parent
 KNOWLEDGE_DIR = ROOT / "knowledge"
+EXPERIENCES_DIR = KNOWLEDGE_DIR / "experiences"
 PROJECTS_DIR = KNOWLEDGE_DIR / "projects"
 PROMPTS_DIR = ROOT / "agent" / "prompts"
 TEMPLATES_DIR = ROOT / "templates"
@@ -45,11 +46,19 @@ def load_knowledge() -> dict:
             continue
         projects.append({"_file": path.name, **load_yaml(path)})
 
+    experiences = []
+    if EXPERIENCES_DIR.is_dir():
+        for path in sorted(EXPERIENCES_DIR.glob("*.yaml")):
+            if path.name.startswith("_"):
+                continue
+            experiences.append({"_file": path.name, **load_yaml(path)})
+
     return {
         "profile": load_yaml(KNOWLEDGE_DIR / "profile.yaml"),
         "abilities": load_yaml(KNOWLEDGE_DIR / "abilities.yaml"),
         "software": load_yaml(KNOWLEDGE_DIR / "software.yaml"),
         "projects": projects,
+        "experiences": experiences,
         "writing_rules": (KNOWLEDGE_DIR / "WRITING_RULES.md").read_text(encoding="utf-8"),
         "resume_schema": json.loads(
             (TEMPLATES_DIR / "resume-schema.json").read_text(encoding="utf-8")
@@ -66,6 +75,7 @@ def build_system_prompt(knowledge: dict) -> str:
             "abilities": knowledge["abilities"],
             "software": knowledge["software"],
             "projects": knowledge["projects"],
+            "experiences": knowledge["experiences"],
         },
         ensure_ascii=False,
         indent=2,

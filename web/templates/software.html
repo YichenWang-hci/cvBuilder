@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Software — cvBuilder{% endblock %}
+{% block content %}
+<form method="post" class="card">
+  <h2 style="margin-top:0">§7 Software</h2>
+  <div id="software">
+    {% for s in software or [{}] %}
+    <div class="block software-row">
+      <label>id</label>
+      <input name="software_id" value="{{ s.id or '' }}" />
+      <div class="row2">
+        <div><label>name (de)</label><input name="software_name_de" value="{{ s.name.de if s.name else '' }}" /></div>
+        <div><label>name (en)</label><input name="software_name_en" value="{{ s.name.en if s.name else '' }}" /></div>
+      </div>
+      <label>keywords</label>
+      <input name="software_keywords" value="{{ (s.keywords or [])|join(', ') }}" />
+      <label>evidence (project_id)</label>
+      <input name="software_evidence" value="{% for e in s.evidence or [] %}{{ e.project_id }}{% if not loop.last %}, {% endif %}{% endfor %}" list="project-ids" />
+    </div>
+    {% endfor %}
+  </div>
+  <datalist id="project-ids">
+    {% for p in projects %}<option value="{{ p.id }}">{% endfor %}
+  </datalist>
+  <button type="button" class="btn secondary small" onclick="cloneBlock('software','software-row')">+ Add software</button>
+  <p style="margin-top:20px"><button type="submit" class="btn">Save software.yaml</button></p>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+function cloneBlock(containerId, rowClass) {
+  const c = document.getElementById(containerId);
+  const row = c.querySelector('.' + rowClass);
+  if (row) c.appendChild(row.cloneNode(true));
+}
+</script>
+{% endblock %}

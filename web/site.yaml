@@ -1,0 +1,5 @@
+# Public web UI settings (safe to commit)
+# Override templates_video_url via .env TEMPLATES_VIDEO_URL if needed
+
+# YouTube or demo link for "View Templates" (leave empty until ready)
+templates_video_url: ""

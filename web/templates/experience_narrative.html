@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Describe work or internship — cvBuilder{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin-top:0">Describe work or internship in your own words</h2>
+  <p class="hint">
+    Write in <strong>any language</strong>. The system extracts company name, role, dates, location, tech stack, keywords, and bullet points, then drafts de + en versions.
+    It will <strong>not invent</strong> details you did not mention. Missing fields are marked TODO on the review page.
+  </p>
+  <p class="hint">Requires an LLM API in <code>.env</code> (same as <code>generate.py</code>).</p>
+</div>
+
+<form method="post" class="card">
+  <label>Work or internship description (more detail helps)</label>
+  <textarea name="narrative" rows="14" placeholder="e.g. From March to August 2024 I interned at Siemens as an XR developer (Praktikantin). I built Unity scenes and hand interaction with C# and MediaPipe…">{{ narrative }}</textarea>
+
+  <p style="margin-top:16px">
+    <button type="submit" class="btn">Extract → review &amp; save</button>
+    <a class="btn secondary" href="{{ url_for('experience_form', experience_id='new') }}" style="margin-left:8px">Use form instead</a>
+    <a class="btn secondary" href="{{ url_for('experiences') }}" style="margin-left:8px">Back to list</a>
+  </p>
+</form>
+{% endblock %}

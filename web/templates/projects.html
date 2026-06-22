@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Projects — cvBuilder{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin-top:0">Add a project</h2>
+  <p class="hint">For coursework, personal, or research projects. If you have company experience, use Work &amp; Internships instead.</p>
+  <a class="btn" href="{{ url_for('project_form', project_id='new') }}">Fill in form</a>
+  <a class="btn secondary" href="{{ url_for('project_narrative') }}" style="margin-left:8px">Describe in your own words (auto-extract)</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr><th>id</th><th>Title (en)</th><th>Period</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for p in projects %}
+      <tr>
+        <td><code>{{ p.id }}</code></td>
+        <td>{{ p.title.en if p.title else '' }}</td>
+        <td>{{ p.period or '—' }}</td>
+        <td>
+          <a href="{{ url_for('project_form', project_id=p.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('project_delete', project_id=p.id) }}" style="display:inline" onsubmit="return confirm('Delete {{ p.id }}?')">
+            <button type="submit" class="btn danger small">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="hint">No projects yet. If you only have work/internship experience, add it under Work &amp; Internships. Section 4 needs at least one entry.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

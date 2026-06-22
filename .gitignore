@@ -6,3 +6,5 @@ __pycache__/
 .DS_Store
 applications/
 knowledge/
+web/static/design/hero.png
+web/static/design/hero@2x.png

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Generate Resume — cvBuilder{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin-top:0">Generate resume from job description</h2>
+  <p class="hint">
+    Reads your local <code>knowledge/</code> base and calls the LLM to produce <code>resume.json</code>,
+    optionally <code>figma-fill-payload.json</code> for the Figma plugin.
+    This usually takes 20–60 seconds. Please keep this page open.
+  </p>
+</div>
+
+<form method="post" class="card" id="gen-form" onsubmit="document.getElementById('go').disabled=true; document.getElementById('go').textContent='Generating…';">
+  <label>Job description (full text)</label>
+  <textarea name="jd" rows="12" required>{{ jd }}</textarea>
+
+  <div class="row2" style="margin-top:12px">
+    <div>
+      <label>Output language</label>
+      <select name="lang">
+        <option value="auto" {{ 'selected' if lang == 'auto' else '' }}>Auto-detect</option>
+        <option value="de" {{ 'selected' if lang == 'de' else '' }}>German (de)</option>
+        <option value="en" {{ 'selected' if lang == 'en' else '' }}>English (en)</option>
+      </select>
+    </div>
+    <div style="padding-top:28px">
+      <label><input type="checkbox" name="fill_figma" {{ 'checked' if fill_figma else '' }} /> Also generate Figma fill JSON</label>
+    </div>
+  </div>
+
+  <p style="margin-top:16px">
+    <button type="submit" class="btn" id="go">Generate</button>
+  </p>
+</form>
+
+{% if output %}
+<div class="card">
+  <h3 style="margin-top:0">Done</h3>
+  <p>
+    Folder: <code>applications/{{ output.folder }}/</code>
+    · Language: <strong>{{ output.lang }}</strong>
+  </p>
+  {% if output.warnings %}
+  <div class="flash err">
+    <strong>Warnings</strong>
+    <ul>{% for w in output.warnings %}<li>{{ w }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+  <p>
+    <a class="btn secondary small" href="{{ url_for('application_file', folder=output.folder, filename='resume.json', download=1) }}">Download resume.json</a>
+    {% if output.figma_payload %}
+    <button type="button" class="btn small" onclick="copyFigma()">Copy Figma JSON</button>
+    {% endif %}
+    <a class="btn secondary small" href="{{ url_for('application_file', folder=output.folder, filename='resume.txt') }}" target="_blank">View resume.txt</a>
+  </p>
+</div>
+
+{% if output.figma_payload %}
+<div class="card">
+  <h3 style="margin-top:0">figma-fill-payload.json</h3>
+  <p class="hint">Copy the JSON below → Figma plugin <strong>cvBuilder Fill</strong> → paste → Fill resume</p>
+  <textarea id="figma-payload" rows="10" readonly>{{ output.figma_payload }}</textarea>
+</div>
+{% endif %}
+
+<div class="card">
+  <h3 style="margin-top:0">resume.json preview</h3>
+  <textarea rows="12" readonly>{{ output.resume_json }}</textarea>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Full text output</h3>
+  <textarea rows="16" readonly>{{ output.resume_text }}</textarea>
+</div>
+{% endif %}
+
+{% if recent %}
+<div class="card">
+  <h3 style="margin-top:0">Recent runs</h3>
+  <table>
+    <thead><tr><th>Folder</th><th>Files</th></tr></thead>
+    <tbody>
+      {% for r in recent %}
+      <tr>
+        <td><code>{{ r.folder }}</code></td>
+        <td>
+          {% if r.has_resume %}<a href="{{ url_for('application_file', folder=r.folder, filename='resume.json', download=1) }}">resume.json</a>{% endif %}
+          {% if r.has_figma %} · <a href="{{ url_for('application_file', folder=r.folder, filename='figma-fill-payload.json', download=1) }}">figma JSON</a>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+function copyFigma() {
+  const t = document.getElementById('figma-payload');
+  if (!t) return;
+  t.select();
+  document.execCommand('copy');
+  alert('Copied figma-fill-payload.json. Paste it into the Figma plugin.');
+}
+</script>
+{% endblock %}

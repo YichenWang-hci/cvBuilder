@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Work &amp; Internships — cvBuilder{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin-top:0">Add work or internship</h2>
+  <p class="hint">For company internships or jobs. If you only have student projects, use the Projects page instead.</p>
+  <a class="btn" href="{{ url_for('experience_form', experience_id='new') }}">Fill in form</a>
+  <a class="btn secondary" href="{{ url_for('experience_narrative') }}" style="margin-left:8px">Describe in your own words (auto-extract)</a>
+</div>
+
+<div class="card">
+  <p class="hint">Section 4 shows up to 3 entries. Work and internships are listed before projects.</p>
+  <table>
+    <thead>
+      <tr><th>id</th><th>Type</th><th>Company</th><th>Role (en)</th><th>Period</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for e in experiences %}
+      <tr>
+        <td><code>{{ e.id }}</code></td>
+        <td><span class="badge {{ 'ok' if e.kind == 'work' else 'empty' }}">{{ e.kind or 'internship' }}</span></td>
+        <td>{{ e.company or '—' }}</td>
+        <td>{{ e.role.en if e.role else '' }}</td>
+        <td>{{ e.period or '—' }}</td>
+        <td>
+          <a href="{{ url_for('experience_form', experience_id=e.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('experience_delete', experience_id=e.id) }}" style="display:inline" onsubmit="return confirm('Delete {{ e.id }}?')">
+            <button type="submit" class="btn danger small">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="hint">No work or internship entries yet. Project-only experience can go on the Projects page.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

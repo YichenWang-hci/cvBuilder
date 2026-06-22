@@ -40,7 +40,7 @@
 | 1 姓名 | 固定 | 语言无关，`name` 原样 |
 | 2 自我描述 | 可变 | `summaries[].text.de` 或 `.en` |
 | 3 学习经历 | 可变 | `degree.de` 或 `.en`；`school` / `period` 通常不变 |
-| 4 项目 | 可变 | `title`, `role`, `bullets[].text` 取对应语言 |
+| 4 项目/工作/实习 | 可变 | experiences：`company`+可选`title`→输出`title`；`role`、`bullets[].text`；projects：同前 |
 | 5 联系方式 | 固定 | 语言无关 |
 | 6 个人能力 | 可变 | `abilities[].name.de` 或 `.en` |
 | 7 软件能力 | 可变 | `software[].name.de` 或 `.en` |
@@ -53,7 +53,7 @@
 | 1 | 姓名 | **固定** | `profile.yaml` → `name` |
 | 2 | 自我描述 | **可变** | `profile.yaml` → `summaries` |
 | 3 | 学习经历 | **可变** | `profile.yaml` → `education` |
-| 4 | 项目经历 | **可变** | `knowledge/projects/*.yaml` |
+| 4 | 项目经历 | **可变** | `knowledge/projects/*.yaml` **+** `knowledge/experiences/*.yaml` |
 | 5 | 联系方式 | **固定** | `profile.yaml` → `contact` |
 | 6 | 个人能力 | **可变** | `abilities.yaml` |
 | 7 | 软件能力 | **可变** | `software.yaml` |
@@ -61,6 +61,7 @@
 
 ### 可变字段补充
 
+- §4 工作/实习：`experiences` 条目的 `title` 字段输出 **company**（若有 subtitle 可拼成 `Company — Subtitle`）；`role` 为职位
 - §3：`period` 为空或不完整 → **跳过该条**（不编造），在 `match_report` 注明，**不中断生成**
 - 日期展示：资料库 `period` 已为德式（见 `templates/DATA_FORMAT.md`），生成时原样复制，不改成 ISO
 - §6 / §7：按 JD 选 subset + rank；只选有 evidence 的项（除非 report 说明例外）
@@ -70,7 +71,7 @@
 
 1. 遵守 `knowledge/WRITING_RULES.md`
 2. 禁止编造
-3. 项目最多 3 段，每段最多 3 bullets
+3. **§4 最多 3 段**（工作/实习 + 项目合计），每段最多 3 bullets；**优先选与 JD 最相关的**（含 `experiences` 中 internship/work）
 4. 动机信 250–350 词，语言 = `output_language`
 5. 自检：替换公司名后仍通用 → 重写
 

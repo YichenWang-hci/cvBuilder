@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ 'New' if is_new else 'Edit' }} project — cvBuilder{% endblock %}
+{% block content %}
+<form method="post" class="card">
+  <h2 style="margin-top:0">{{ 'New project' if is_new else 'Edit project' }}</h2>
+  {% if from_narrative and intake_report %}
+  <div class="flash ok" style="white-space:pre-wrap">{{ intake_report }}</div>
+  <p class="hint">Review the draft below, edit if needed, then save.</p>
+  {% endif %}
+
+  <label>id (filename slug, no spaces)</label>
+  <input type="text" name="id" value="{{ project.id if project else '' }}" {{ '' if is_new else 'readonly' }} required />
+
+  <div class="row2">
+    <div><label>title (de)</label><input name="title_de" value="{{ project.title.de if project and project.title else '' }}" /></div>
+    <div><label>title (en)</label><input name="title_en" value="{{ project.title.en if project and project.title else '' }}" /></div>
+  </div>
+  <div class="row2">
+    <div><label>role (de)</label><input name="role_de" value="{{ project.role.de if project and project.role else '' }}" /></div>
+    <div><label>role (en)</label><input name="role_en" value="{{ project.role.en if project and project.role else '' }}" /></div>
+  </div>
+  <div class="row2">
+    <div><label>type (de)</label><input name="type_de" value="{{ project.type.de if project and project.type else '' }}" placeholder="Universitätsprojekt" /></div>
+    <div><label>type (en)</label><input name="type_en" value="{{ project.type.en if project and project.type else '' }}" placeholder="University Project" /></div>
+  </div>
+
+  <label>period (German date format)</label>
+  <input name="period" value="{{ project.period if project else '' }}" placeholder="04.2025 - 07.2025" />
+
+  <label>tech_stack (comma-separated)</label>
+  <input name="tech_stack" value="{{ (project.tech_stack or [])|join(', ') if project else '' }}" />
+
+  <label>keywords (comma-separated)</label>
+  <input name="keywords" value="{{ (project.keywords or [])|join(', ') if project else '' }}" />
+
+  <label>target_roles (comma-separated)</label>
+  <input name="target_roles" value="{{ (project.target_roles or [])|join(', ') if project else '' }}" />
+
+  <h2 class="section-title">Bullets (up to 3 on resume)</h2>
+  <div id="bullets">
+    {% for b in (project.bullets if project else []) or [{'id':'b1'},{'id':'b2'},{'id':'b3'}] %}
+    <div class="block bullet-row">
+      <label>bullet id</label>
+      <input name="bullet_id" value="{{ b.id or '' }}" />
+      <label>text (de)</label>
+      <textarea name="bullet_text_de">{{ b.text.de if b.text else '' }}</textarea>
+      <label>text (en)</label>
+      <textarea name="bullet_text_en">{{ b.text.en if b.text else '' }}</textarea>
+      <label>tags (comma-separated)</label>
+      <input name="bullet_tags" value="{{ (b.tags or [])|join(', ') }}" />
+    </div>
+    {% endfor %}
+  </div>
+  <button type="button" class="btn secondary small" onclick="cloneBlock('bullets','bullet-row')">+ Add bullet</button>
+
+  {% if is_new and not from_narrative %}
+  <p class="hint"><a href="{{ url_for('project_narrative') }}">Describe in your own words instead</a></p>
+  {% endif %}
+
+  <p style="margin-top:20px">
+    <button type="submit" class="btn">Save</button>
+    <a class="btn secondary" href="{{ url_for('projects') }}" style="margin-left:8px">Back</a>
+  </p>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+function cloneBlock(containerId, rowClass) {
+  const c = document.getElementById(containerId);
+  const row = c.querySelector('.' + rowClass);
+  if (row) c.appendChild(row.cloneNode(true));
+}
+</script>
+{% endblock %}

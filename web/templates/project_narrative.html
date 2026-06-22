@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Describe a project — cvBuilder{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin-top:0">Describe a project in your own words</h2>
+  <p class="hint">
+    Write in <strong>any language</strong>. The system extracts the project name, role, dates, tech stack, keywords, and bullet points, then drafts de + en versions.
+    It will <strong>not invent</strong> details you did not mention. Missing fields are marked TODO on the review page.
+  </p>
+  <p class="hint">Requires an LLM API in <code>.env</code> (same as <code>generate.py</code>).</p>
+</div>
+
+<form method="post" class="card">
+  <label>Project description (more detail helps)</label>
+  <textarea name="narrative" rows="14" placeholder="e.g. Last summer I built a VR training demo in Unity and C# over two months. I handled interaction design and development, using MediaPipe for hand tracking…">{{ narrative }}</textarea>
+
+  <p style="margin-top:16px">
+    <button type="submit" class="btn">Extract → review &amp; save</button>
+    <a class="btn secondary" href="{{ url_for('project_form', project_id='new') }}" style="margin-left:8px">Use form instead</a>
+    <a class="btn secondary" href="{{ url_for('projects') }}" style="margin-left:8px">Back to list</a>
+  </p>
+</form>
+{% endblock %}

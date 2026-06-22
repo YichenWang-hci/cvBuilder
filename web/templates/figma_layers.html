@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Figma Layer Names — cvBuilder{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin-top:0">Figma resume template — text layer names</h2>
+  <p class="hint">
+    In Figma, set each replaceable text layer's <strong>Layer Name</strong> to the <code>name</code> value below (not the placeholder text inside the layer).
+    Preview values come from your current <code>knowledge/</code> base.
+  </p>
+  <p>
+    <button type="button" class="btn" onclick="copyNames()">Copy all fillable layer names</button>
+    <button type="button" class="btn secondary" onclick="copyAll()" style="margin-left:8px">Copy list with notes</button>
+  </p>
+  <textarea id="copy-area" style="position:absolute;left:-9999px">{{ names_text }}</textarea>
+</div>
+
+{% for group, items in grouped.items() %}
+<div class="card">
+  <h3 style="margin-top:0">{{ group }}</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Layer Name</th>
+        <th>Notes</th>
+        <th>Status</th>
+        <th>Preview</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in items %}
+      <tr>
+        <td><code>{{ l.name }}</code></td>
+        <td>{{ l.hint or '—' }}</td>
+        <td>
+          {% if not l.fillable %}
+            <span class="badge design">Design only</span>
+          {% elif l.has_data %}
+            <span class="badge ok">Has data</span>
+          {% else %}
+            <span class="badge empty">Empty</span>
+          {% endif %}
+        </td>
+        <td style="max-width:280px;word-break:break-word">{{ l.preview or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endfor %}
+{% endblock %}
+{% block scripts %}
+<script>
+function copyNames() {
+  const t = document.getElementById('copy-area');
+  t.style.position = 'fixed';
+  t.style.left = '0';
+  t.select();
+  document.execCommand('copy');
+  t.style.position = 'absolute';
+  t.style.left = '-9999px';
+  alert('Copied ' + t.value.split('\n').length + ' layer names');
+}
+function copyAll() {
+  const lines = [];
+  {% for l in layers %}
+  lines.push('{{ l.name }}\t{{ l.group }}\t{{ l.hint|replace("'", "") }}');
+  {% endfor %}
+  const blob = lines.join('\n');
+  navigator.clipboard.writeText(blob).then(() => alert('Copied full list'));
+}
+</script>
+{% endblock %}
