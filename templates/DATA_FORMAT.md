@@ -12,7 +12,7 @@
 |------|------|------|
 | `name` | 官方拼写，拉丁字母 | `Yichen Wang` |
 | `contact.email` | 小写邮箱 | `name@example.com` |
-| `contact.address` | 街道, PLZ 城市 | `Kantstrasse 9A, 97074 Würzburg` |
+| `contact.address` | 街道, PLZ 城市 | `Hublandstr 12A, 97344 Würzburg` |
 | `school` | 学校官方名 | `Universität Würzburg` |
 
 ### 1.1 电话号码 — DIN 5008（E.123 国际格式）
